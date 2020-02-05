@@ -1,16 +1,19 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, EventEmitter } from '@angular/core';
 import * as L from 'leaflet';
+import { MarkersService } from '../../../services/markers.service';
 
 @Component({
   selector: 'app-map-base',
   templateUrl: './map-base.component.html',
   styleUrls: ['./map-base.component.css']
 })
-export class MapBaseComponent implements OnInit {
+export class MapBaseComponent implements OnInit, AfterViewInit {
   private map;
-  private moscowCoords: Array<number>;
+  private moscowCoords: Number[];
 
-  constructor() {
+  constructor(
+    private marker: MarkersService
+  ) {
     this.moscowCoords = [55.751244, 37.618423];
   }
 
@@ -30,8 +33,15 @@ export class MapBaseComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(): void {
     this.initMap();
     this.addTiles();
+    const mosCenterMarker = this.marker.initMarker(this.moscowCoords);
+    this.marker.setStartingMarker(mosCenterMarker, this.map);
+    this.marker.setMarkerOnClick(this.map);
+
   }
 
 }
