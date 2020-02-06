@@ -1,5 +1,6 @@
-import { Component, OnInit, AfterViewInit, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
+
 import { MarkersService } from '../../../services/markers/markers.service';
 import { MapService } from '../../../services/map/map.service';
 import { ShapesService } from '../../../services/shapes/shapes.service';
@@ -12,8 +13,11 @@ import { ShapesService } from '../../../services/shapes/shapes.service';
 export class MapBaseComponent implements OnInit, AfterViewInit {
   private map;
   private moscowCoords: number[];
+  private centerOfRussia: number[];
   private baseZoom: number;
   private maxZoom: number;
+  private clickZoom: number;
+  private geoJsonUrl: string;
 
   constructor(
     private marker: MarkersService,
@@ -21,13 +25,16 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     private shapes: ShapesService
   ) {
     this.moscowCoords = [55.751244, 37.618423];
-    this.baseZoom = 5;
+    this.centerOfRussia = [67.58290340170387, 105.2480033085533];
+    this.baseZoom = 4;
     this.maxZoom = 19;
+    this.clickZoom = 11;
+    this.geoJsonUrl = '../../assets/data/admin_level_4.geojson';
   }
 
   private initMap(): void {
     return L.map('map', {
-      center: this.moscowCoords,
+      center: this.centerOfRussia,
       zoom: this.baseZoom
     });
   }
@@ -45,14 +52,22 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.map = this.initMap();
-    this.addTiles();
+    // this.addTiles();
     const mosCenterMarker = this.marker.initMarker(this.moscowCoords);
     this.marker.setStartingMarker(mosCenterMarker, this.map);
     // this.marker.setMarkerOnClick(this.map);
     this.mapService.centerMapOnClick(this.map, this.baseZoom);
+
+    // Рисуем границу РФ
     this.shapes.getShape().subscribe(shape => {
-      L.geoJSON(shape).addTo(this.map);
+      const shapeLayer = this.shapes.initShapes(shape);
+      this.map.addLayer(shapeLayer);
+    });
+
+    // Рисуем субъекты РФ
+    this.shapes.getShape(this.geoJsonUrl).subscribe(shape => {
+      const shapeLayer = this.shapes.initClickableShapes(shape);
+      this.map.addLayer(shapeLayer);
     });
   }
-
 }

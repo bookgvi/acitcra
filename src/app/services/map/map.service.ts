@@ -8,7 +8,7 @@ export class MapService {
   public centerMapOnClick(map, zoom): void {
     map.on('click', e => {
       this.coordsOfClick = [e.latlng.lat, e.latlng.lng];
-      map.flyTo(this.coordsOfClick, zoom);
+      map.setView(this.coordsOfClick, zoom);
     });
     //
   }
