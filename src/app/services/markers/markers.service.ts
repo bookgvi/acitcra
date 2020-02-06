@@ -6,7 +6,7 @@ export class MarkersService {
   constructor() {
   }
 
-  initMarker(coords: Number[]) {
+  initMarker(coords: number[]) {
     const marker = new L.Marker(coords, {
       draggable: true
     });
@@ -14,7 +14,7 @@ export class MarkersService {
   }
 
   setStartingMarker(marker, map) {
-    marker.bindPopup().openPopup();
+    marker.bindPopup('Moscow').openPopup();
     marker.addTo(map);
     marker.on('contextmenu', e => {
       marker.remove();
@@ -23,8 +23,9 @@ export class MarkersService {
 
   setMarkerOnClick(map) {
     map.on('click', (e) => {
+      console.log([e.latlng.lat, e.latlng.lng]);
       const marker = new L.Marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-      marker.on('contextmenu', e => {
+      marker.on('contextmenu', () => {
         marker.remove();
       });
     });
