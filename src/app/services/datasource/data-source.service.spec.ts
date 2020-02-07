@@ -1,12 +1,12 @@
 // import { TestBed } from '@angular/core/testing';
 //
-// import { ShapesService } from './shapes.service';
+// import { DataSourceService } from './data-source.service';
 //
-// describe('ShapesService', () => {
+// describe('DataSourceService', () => {
 //   beforeEach(() => TestBed.configureTestingModule({}));
 //
 //   it('should be created', () => {
-//     const service: ShapesService = TestBed.get(ShapesService);
+//     const service: DataSourceService = TestBed.get(DataSourceService);
 //     expect(service).toBeTruthy();
 //   });
 // });
