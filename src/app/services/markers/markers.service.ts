@@ -23,6 +23,7 @@ export class MarkersService {
 
   setMarkerOnClick(map) {
     map.on('click', (e) => {
+      console.log([e.latlng.lat, e.latlng.lng]);
       const marker = new L.Marker([e.latlng.lat, e.latlng.lng]).addTo(map);
       marker.on('contextmenu', () => {
         marker.remove();

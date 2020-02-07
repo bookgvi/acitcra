@@ -11,33 +11,50 @@ export class ShapesService {
   private url: string;
   private baseStyle: object;
   private highlight: object;
+  private readonly _div: HTMLDivElement;
 
   constructor(private http: HttpClient) {
     this.url = '../../assets/data/admin_level_2.geojson';
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
+    this._div = L.DomUtil.create('div', 'info');
+    this._div.textContent = 'Россия';
   }
 
-  getShape(url: string = this.url): Observable<any> {
+  public getShape(url: string = this.url): Observable<any> {
     return this.http.get(url);
   }
 
-  initShapes(shape) {
+  public initShapes(shape) {
     return L.geoJSON(shape, {
       // @ts-ignore
       style: feature => this.baseStyle.style
     });
   }
-  initClickableShapes(shape) {
+
+  public initInfoPanel(map): void {
+    const info = L.control();
+    info.onAdd = () => this._div;
+    info.addTo(map);
+  }
+
+  public initClickableShapes(shape, map) {
     return L.geoJSON(shape, {
       // @ts-ignore
       style: feature => this.baseStyle.style,
       onEachFeature: (feature, layer) => (
         layer.on({
+          mouseover: (e) => {
+            // @ts-ignore
+            this.highlight.setFeature(e)
+            this._div.textContent = feature.properties.NAME;
+          },
           // @ts-ignore
-          mouseover: (e) => (this.highlight.setFeature(e)),
+          mouseout: (e) => (this.baseStyle.setFeature(e)),
           // @ts-ignore
-          mouseout: (e) => (this.baseStyle.setFeature(e))
+          click: (e) => {
+            map.fitBounds(e.target.getBounds());
+          }
         })
       )
     });

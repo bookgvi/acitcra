@@ -17,7 +17,9 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private baseZoom: number;
   private maxZoom: number;
   private clickZoom: number;
-  private geoJsonUrl: string;
+  private subjectsOfRussia: string;
+  private RussiaBoundsLeftTop: number[];
+  private RussiaBoundsRightBottom: number[];
 
   constructor(
     private marker: MarkersService,
@@ -29,7 +31,9 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.baseZoom = 4;
     this.maxZoom = 19;
     this.clickZoom = 11;
-    this.geoJsonUrl = '../../assets/data/admin_level_4.geojson';
+    this.subjectsOfRussia = '../../assets/data/Regions.geojson';
+    this.RussiaBoundsLeftTop = [82.04574006217713, 17.402343750000004];
+    this.RussiaBoundsRightBottom = [39.095962936305476, 187.73437500000003];
   }
 
   private initMap(): void {
@@ -52,21 +56,29 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.map = this.initMap();
+    this.map.fitBounds([this.RussiaBoundsLeftTop, this.RussiaBoundsRightBottom]);
     // this.addTiles();
     const mosCenterMarker = this.marker.initMarker(this.moscowCoords);
     this.marker.setStartingMarker(mosCenterMarker, this.map);
+
+
+    /**
+     * Вспомогательные методы, периодически используются
+     *
+     * */
     // this.marker.setMarkerOnClick(this.map);
-    this.mapService.centerMapOnClick(this.map, this.baseZoom);
+    // this.mapService.centerMapOnClick(this.map, this.baseZoom);
+    //
+    // // Рисуем границу РФ
+    // this.shapes.getShape().subscribe(shape => {
+    //   const shapeLayer = this.shapes.initShapes(shape);
+    //   this.map.addLayer(shapeLayer);
+    // });
 
-    // Рисуем границу РФ
-    this.shapes.getShape().subscribe(shape => {
-      const shapeLayer = this.shapes.initShapes(shape);
-      this.map.addLayer(shapeLayer);
-    });
-
+    this.shapes.initInfoPanel(this.map);
     // Рисуем субъекты РФ
-    this.shapes.getShape(this.geoJsonUrl).subscribe(shape => {
-      const shapeLayer = this.shapes.initClickableShapes(shape);
+    this.shapes.getShape(this.subjectsOfRussia).subscribe(shape => {
+      const shapeLayer = this.shapes.initClickableShapes(shape, this.map);
       this.map.addLayer(shapeLayer);
     });
   }
