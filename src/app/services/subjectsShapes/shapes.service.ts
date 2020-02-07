@@ -70,9 +70,6 @@ export class ShapesService {
             if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
               // @ts-ignore
               this.azrfStyle.setFeature(e);
-            } else {
-              // @ts-ignore
-              this.baseStyle.setFeature(e);
             }
           },
           click: (e) => {

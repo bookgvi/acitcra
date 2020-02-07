@@ -71,8 +71,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     // this.marker.setMarkerOnClick(this.map);
     // this.mapService.centerMapOnClick(this.map, this.baseZoom);
     //
-    // // Рисуем границу РФ
-    // this.shapes.getShape().subscribe(shape => {
+    // Рисуем границу РФ
+    // this.ds.getShape().subscribe(shape => {
     //   const shapeLayer = this.shapes.initShapes(shape);
     //   this.map.addLayer(shapeLayer);
     // });
