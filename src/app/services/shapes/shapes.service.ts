@@ -47,7 +47,7 @@ export class ShapesService {
           mouseover: (e) => {
             // @ts-ignore
             this.highlight.setFeature(e)
-            this._div.textContent = feature.properties.NAME;
+            this._div.innerHTML = `<h4>${feature.properties.NAME}</h4>`;
           },
           // @ts-ignore
           mouseout: (e) => (this.baseStyle.setFeature(e)),
