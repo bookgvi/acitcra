@@ -9,15 +9,13 @@ import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
 
 @Injectable()
 export class ShapesService {
-  private url: string;
   private baseStyle: object;
   private highlight: object;
   private azrfStyle: object;
   private readonly _div: HTMLDivElement;
   private constituentEntity: string[];
 
-  constructor(private http: HttpClient) {
-    this.url = '../../assets/data/admin_level_2.geojson';
+  constructor() {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
@@ -34,10 +32,6 @@ export class ShapesService {
       'Красноярский край',
       'Архангельская область'
     ];
-  }
-
-  public getShape(url: string = this.url): Observable<any> {
-    return this.http.get(url);
   }
 
   public initShapes(shape) {

@@ -4,6 +4,7 @@ import * as L from 'leaflet';
 import { MarkersService } from '../../../services/markers/markers.service';
 import { MapService } from '../../../services/map/map.service';
 import { ShapesService } from '../../../services/subjectsShapes/shapes.service';
+import { DataSourceService } from '../../../services/datasource/data-source.service';
 
 @Component({
   selector: 'app-map-base',
@@ -24,7 +25,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   constructor(
     private marker: MarkersService,
     private mapService: MapService,
-    private shapes: ShapesService
+    private shapes: ShapesService,
+    private ds: DataSourceService
   ) {
     this.moscowCoords = [55.751244, 37.618423];
     this.centerOfRussia = [67.58290340170387, 105.2480033085533];
@@ -77,7 +79,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
     this.shapes.initInfoPanel(this.map);
     // Рисуем субъекты РФ
-    this.shapes.getShape(this.subjectsOfRussia).subscribe(shape => {
+    this.ds.getShape(this.subjectsOfRussia).subscribe(shape => {
       const shapeLayer = this.shapes.initClickableShapes(shape, this.map);
       this.map.addLayer(shapeLayer);
     });
