@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 
 import { MarkersService } from '../../../services/markers/markers.service';
 import { MapService } from '../../../services/map/map.service';
-import { ShapesService } from '../../../services/shapes/shapes.service';
+import { ShapesService } from '../../../services/subjectsShapes/shapes.service';
 
 @Component({
   selector: 'app-map-base',
@@ -65,7 +65,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     /**
      * Вспомогательные методы, периодически используются
      *
-     * */
+     */
     // this.marker.setMarkerOnClick(this.map);
     // this.mapService.centerMapOnClick(this.map, this.baseZoom);
     //
