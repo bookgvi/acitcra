@@ -94,7 +94,7 @@ export class ShapesService {
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.ds.saveShapeToSS(feature, { isClicked: true }) // Сохраняем на всяк случай в сессион сторадж
+              this.ds.saveShapeToSS( { isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
 
               /**
                * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты

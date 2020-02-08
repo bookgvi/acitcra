@@ -14,8 +14,10 @@ export class DataSourceService {
     return this.http.get(url);
   }
 
-  public saveShapeToSS(shape: Object, params: Object): void {
-    window.sessionStorage.setItem('checkedShape', JSON.stringify({ shape, params }));
+  public saveShapeToSS(params: Object): void {
+    window.sessionStorage.setItem('checkedShape', JSON.stringify(params));
   }
-
+  public getShapeFromSS(): object {
+    return JSON.parse(window.sessionStorage.getItem('checkedShape'));
+  }
 }
