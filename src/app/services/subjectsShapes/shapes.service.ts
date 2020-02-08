@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 import { BaseFeatures } from '../../models/shapesStyle/baseStyle/base-features';
 import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-features';
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
+import { DataSourceService } from '../datasource/data-source.service';
 
 @Injectable()
 export class ShapesService {
@@ -14,8 +15,11 @@ export class ShapesService {
   private azrfStyle: object;
   private readonly _div: HTMLDivElement;
   private constituentEntity: string[];
+  private clickedLayer: object;
 
-  constructor() {
+  constructor(
+    private ds: DataSourceService
+  ) {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
@@ -47,34 +51,60 @@ export class ShapesService {
     info.addTo(map);
   }
 
+  private restoreDeletedLayer(map): void {
+    // @ts-ignore
+    if (this.clickedLayer?.feature?.type) {
+      map.addLayer(this.clickedLayer)
+    } else {
+      this.clickedLayer = undefined;
+    }
+  }
+
+  private styleForAZRF(feature, e?): boolean {
+    if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
+      // @ts-ignore
+      e ? this.azrfStyle.setFeature(e) : '';
+      return true;
+    }
+    return false;
+  }
+
   public initClickableShapes(shape, map) {
     return L.geoJSON(shape, {
       style: feature => {
-        if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
-          // @ts-ignore
-          return this.azrfStyle.style;
-        }
         // @ts-ignore
-        return this.baseStyle.style;
+        return this.styleForAZRF(feature) ? this.azrfStyle.style : this.baseStyle.style;
       },
+      /**
+       * Методы обработки событий мыши
+       */
       onEachFeature: (feature, layer) => (
         layer.on({
           mouseover: (e) => {
-            if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
-              // @ts-ignore
-              this.highlight.setFeature(e);
-            }
-            this._div.innerHTML = `<h4>${feature.properties.NAME}</h4>`;
+            // @ts-ignore
+            this.styleForAZRF(feature) ? this.highlight.setFeature(e) : '';
+            this._div.innerHTML = `<h4>${ feature.properties.NAME || feature.properties.name }</h4>`;
           },
           mouseout: (e) => {
-            if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
-              // @ts-ignore
-              this.azrfStyle.setFeature(e);
-            }
+            this.styleForAZRF(feature, e);
           },
           click: (e) => {
-            if (this.constituentEntity.indexOf(feature.properties.NAME) !== -1) {
-              map.fitBounds(e.target.getBounds());
+            if (this.styleForAZRF(feature)) {
+              map.fitBounds(e.target.getBounds()); // Отображаем регион с макс зумом
+
+              // @ts-ignore
+              this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
+              this.ds.saveShapeToSS(feature, { isClicked: true }) // Сохраняем на всяк случай в сессион сторадж
+
+              /**
+               * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты
+               * Последовательность вызова методов ВАЖНА
+               */
+              // @ts-ignore
+              this.highlight.setFeature(e);
+              this.styleForAZRF(feature, e);
+              this.clickedLayer = layer;
+              layer.remove();
             }
           }
         })
