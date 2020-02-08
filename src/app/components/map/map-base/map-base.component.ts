@@ -19,8 +19,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private maxZoom: number;
   private clickZoom: number;
   private subjectsOfRussia: string;
-  private RussiaBoundsLeftTop: number[];
-  private RussiaBoundsRightBottom: number[];
+  private RussiaBoundLeftTop: number[];
+  private RussiaBoundRightBottom: number[];
   private constituentEntities: string[];
 
   constructor(
@@ -36,8 +36,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.clickZoom = 11;
     this.subjectsOfRussia = '../../assets/data/Regions.geojson';
     // this.subjectsOfRussia = '../../assets/data/admin_level_6.geojson';
-    this.RussiaBoundsLeftTop = [82.04574006217713, 17.402343750000004];
-    this.RussiaBoundsRightBottom = [39.095962936305476, 187.73437500000003];
+    this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];
+    this.RussiaBoundRightBottom = [39.095962936305476, 187.73437500000003];
     this.constituentEntities = [
       'Мурманская область',
       'Ненецкий автономный округ',
@@ -71,9 +71,9 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.map = this.initMap();
-    this.map.fitBounds([this.RussiaBoundsLeftTop, this.RussiaBoundsRightBottom]);
+    this.map.fitBounds([this.RussiaBoundLeftTop, this.RussiaBoundRightBottom]);
     // this.addTiles();
-    const mosCenterMarker = this.marker.initMarker(this.moscowCoords);
+    const mosCenterMarker = this.marker.initMarker(this.moscowCoords, false);
     this.marker.setStartingMarker(mosCenterMarker, this.map);
 
 

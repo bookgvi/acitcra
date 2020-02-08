@@ -3,7 +3,13 @@ import * as L from 'leaflet';
 
 @Injectable()
 export class MarkersService {
+  private moscowIcon: object;
+
   constructor() {
+    // Избавляемся от ошибки загрузки png с тенью для стандартного маркера
+    Object.defineProperty(L.Icon.Default.prototype.options, 'shadowUrl', {
+      value: ''
+    });
   }
 
   /**
@@ -11,11 +17,12 @@ export class MarkersService {
    * Инициализация маркера
    *
    * @param coords - массив с координатами [longitude, latitude]
+   * @isDraggable - true/false - задание возможности перемещать маркер по карте
    *
    */
-  initMarker(coords: number[]): object {
+  initMarker(coords: number[], isDraggable: boolean): object {
     const marker = new L.Marker(coords, {
-      draggable: true
+      draggable: isDraggable
     });
     return marker;
   }
