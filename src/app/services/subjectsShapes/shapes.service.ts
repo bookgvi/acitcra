@@ -6,7 +6,7 @@ import * as L from 'leaflet';
 import { BaseFeatures } from '../../models/shapesStyle/baseStyle/base-features';
 import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-features';
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
-import { DataSourceService } from '../datasource/data-source.service';
+import { DataSourceService } from '../../models/dataSource/data-source.service';
 
 @Injectable()
 export class ShapesService {
@@ -36,11 +36,10 @@ export class ShapesService {
    * @param constituentEntities - массив с названиями субъектов РФ
    *
    */
-  public initInfoPanel(map, constituentEntities: Array<string>): void {
+  public initInfoPanel(map): void {
     const info = L.control();
     info.onAdd = () => this._div;
     info.addTo(map);
-    this.constituentEntities = constituentEntities;
   }
 
   /**
@@ -89,11 +88,11 @@ export class ShapesService {
    * @return - стилизованый слой, с обработкой событий, готовый для добавления на карту
    *
    */
-  public initClickableShapes(shape, map): object {
+  public initClickableShapes(shape, map, constituentEntities): object {
     return L.geoJSON(shape, {
       style: feature => {
         // @ts-ignore
-        return this.styleForAZRF(feature, this.constituentEntities) ? this.azrfStyle.style : this.baseStyle.style;
+        return this.styleForAZRF(feature, constituentEntities) ? this.azrfStyle.style : this.baseStyle.style;
       },
       /**
        * Методы обработки событий мыши
@@ -102,14 +101,14 @@ export class ShapesService {
         layer.on({
           mouseover: (e) => {
             // @ts-ignore
-            this.styleForAZRF(feature, this.constituentEntities) ? this.highlight.setFeature(e) : '';
+            this.styleForAZRF(feature, constituentEntities) ? this.highlight.setFeature(e) : '';
             this._div.innerHTML = `<h4>${ feature.properties.NAME || feature.properties.name }</h4>`;
           },
           mouseout: (e) => {
-            this.styleForAZRF(feature, this.constituentEntities, e);
+            this.styleForAZRF(feature, constituentEntities, e);
           },
           click: (e) => {
-            if (this.styleForAZRF(feature, this.constituentEntities)) {
+            if (this.styleForAZRF(feature, constituentEntities)) {
               map.fitBounds(e.target.getBounds()); // Отображаем регион с макс зумом
 
               // @ts-ignore
@@ -122,7 +121,7 @@ export class ShapesService {
                */
               // @ts-ignore
               this.highlight.setFeature(e);
-              this.styleForAZRF(feature, this.constituentEntities, e);
+              this.styleForAZRF(feature, constituentEntities, e);
               this.clickedLayer = layer;
               layer.remove();
             }
