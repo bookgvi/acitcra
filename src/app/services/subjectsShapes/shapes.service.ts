@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 import { BaseFeatures } from '../../models/shapesStyle/baseStyle/base-features';
 import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-features';
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
+
 import { DataSourceService } from '../../models/dataSource/data-source.service';
 
 @Injectable()
@@ -14,7 +15,6 @@ export class ShapesService {
   private highlight: object;
   private azrfStyle: object;
   private readonly _div: HTMLDivElement;
-  private constituentEntities: string[];
   private clickedLayer: object;
 
   constructor(
@@ -25,7 +25,6 @@ export class ShapesService {
     this.azrfStyle = new AzrfStyle();
     this._div = L.DomUtil.create('div', 'info');
     this._div.textContent = 'Россия';
-
   }
 
   /**
@@ -33,7 +32,6 @@ export class ShapesService {
    * Создание панели с информацией о названии региона, по наведению мыши. Расположен в правом верхнем углу карты
    *
    * @param MAP
-   * @param constituentEntities - массив с названиями субъектов РФ
    *
    */
   public initInfoPanel(map): void {
@@ -54,7 +52,7 @@ export class ShapesService {
    *
    */
   private styleForAZRF(feature, constituentEntities: string[], e?): boolean {
-    if (constituentEntities.indexOf(feature.properties.NAME) !== -1) {
+    if (constituentEntities.indexOf(feature?.properties?.NAME) !== -1) {
       // @ts-ignore
       e ? this.azrfStyle.setFeature(e) : '';
       return true;
@@ -113,7 +111,7 @@ export class ShapesService {
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.ds.saveShapeToSS({ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
+              this.ds.saveToStorage('shape',{ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
 
               /**
                * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты

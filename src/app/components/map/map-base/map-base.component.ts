@@ -5,6 +5,8 @@ import { MarkersService } from '../../../services/markers/markers.service';
 import { MapService } from '../../../services/map/map.service';
 import { ShapesService } from '../../../services/subjectsShapes/shapes.service';
 import { DataSourceService } from '../../../models/dataSource/data-source.service';
+import { of } from 'rxjs';
+import { retry } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map-base',
@@ -34,7 +36,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.baseZoom = 4;
     this.maxZoom = 19;
     this.clickZoom = 11;
-    this.subjectsOfRussiaShapes = '../../assets/data/Regions.geojson';
+    this.subjectsOfRussiaShapes = '../../assets/geoData/Regions.geojson';
     this.subjectsOfRussiaList = '../../assets/constituentEntities/subjectsOfRussia.json';
     this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];
     this.RussiaBoundRightBottom = [39.095962936305476, 187.73437500000003];
@@ -78,13 +80,14 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     //   const shapeLayer = this.shapes.initShapes(shape);
     //   this.map.addLayer(shapeLayer);
     // });
+
+    this.shapesService.initInfoPanel(this.map);
+    // Рисуем субъекты РФ
     this.ds.getData(this.subjectsOfRussiaList).subscribe((subjectsOfRussia: string[]) => {
-      this.shapesService.initInfoPanel(this.map);
-      // Рисуем субъекты РФ
-      this.ds.getData(this.subjectsOfRussiaShapes).subscribe(shape => {
+      this.ds.getData(this.subjectsOfRussiaShapes).subscribe((shape: object) => {
         const shapeLayer = this.shapesService.initClickableShapes(shape, this.map, subjectsOfRussia);
         this.map.addLayer(shapeLayer);
       });
-    })
+    });
   }
 }
