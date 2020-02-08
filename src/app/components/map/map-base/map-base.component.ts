@@ -21,6 +21,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private subjectsOfRussia: string;
   private RussiaBoundsLeftTop: number[];
   private RussiaBoundsRightBottom: number[];
+  private constituentEntities: string[];
 
   constructor(
     private marker: MarkersService,
@@ -37,6 +38,17 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     // this.subjectsOfRussia = '../../assets/data/admin_level_6.geojson';
     this.RussiaBoundsLeftTop = [82.04574006217713, 17.402343750000004];
     this.RussiaBoundsRightBottom = [39.095962936305476, 187.73437500000003];
+    this.constituentEntities = [
+      'Мурманская область',
+      'Ненецкий автономный округ',
+      'Чукотский автономный округ',
+      'Ямало-Ненецкий автономный округ',
+      'Республика Карелия',
+      'Республика Коми',
+      'Республика Саха (Якутия)',
+      'Красноярский край',
+      'Архангельская область'
+    ];
   }
 
   private initMap(): void {
@@ -78,7 +90,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     //   this.map.addLayer(shapeLayer);
     // });
 
-    this.shapes.initInfoPanel(this.map);
+    this.shapes.initInfoPanel(this.map, this.constituentEntities);
     // Рисуем субъекты РФ
     this.ds.getShape(this.subjectsOfRussia).subscribe(shape => {
       const shapeLayer = this.shapes.initClickableShapes(shape, this.map);
