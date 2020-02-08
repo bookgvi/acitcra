@@ -3,13 +3,22 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class MapService {
   private coordsOfClick: number[];
-  constructor() { }
 
+  constructor() {
+  }
+
+  /**
+   *
+   * Центрирование карты по клику (неиспользуется)
+   *
+   * @param map
+   * @param zoom
+   *
+  */
   public centerMapOnClick(map, zoom): void {
     map.on('click', e => {
       this.coordsOfClick = [e.latlng.lat, e.latlng.lng];
       map.setView(this.coordsOfClick, zoom);
     });
-    //
   }
 }
