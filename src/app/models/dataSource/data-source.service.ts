@@ -7,7 +7,7 @@ export class DataSourceService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = '../../assets/data/admin_level_2.geojson';
+    this.url = '../assets/data/admin_level_2.geojson';
   }
 
   /**
@@ -19,7 +19,7 @@ export class DataSourceService {
    * @return - Observable
    *
    */
-  public getShape(url: string = this.url): Observable<any> {
+  public getData(url: string): Observable<any> {
     return this.http.get(url);
   }
 
