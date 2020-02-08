@@ -7,7 +7,6 @@ export class DataSourceService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = '../assets/data/admin_level_2.geojson';
   }
 
   /**
@@ -30,8 +29,8 @@ export class DataSourceService {
    * @param params - объект с данными для сохранения
    *
    */
-  public saveShapeToSS(params: Object): void {
-    window.sessionStorage.setItem('checkedShape', JSON.stringify(params));
+  public saveToStorage(keyName: string, params: Object): void {
+    window.sessionStorage.setItem(keyName, JSON.stringify(params));
   }
 
   /**
@@ -41,7 +40,7 @@ export class DataSourceService {
    * @return - объект с данными
    *
    */
-  public getShapeFromSS(): object {
-    return JSON.parse(window.sessionStorage.getItem('checkedShape'));
+  public getFromStorage(keyName: string): object {
+    return JSON.parse(window.sessionStorage.getItem(keyName));
   }
 }
