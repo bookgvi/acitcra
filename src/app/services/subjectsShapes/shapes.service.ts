@@ -14,7 +14,6 @@ export class ShapesService {
   private baseStyle: object;
   private highlight: object;
   private azrfStyle: object;
-  private readonly _div: HTMLDivElement;
   private clickedLayer: object;
 
   constructor(
@@ -23,21 +22,6 @@ export class ShapesService {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
-    this._div = L.DomUtil.create('div', 'info');
-    this._div.textContent = 'Россия';
-  }
-
-  /**
-   *
-   * Создание панели с информацией о названии региона, по наведению мыши. Расположен в правом верхнем углу карты
-   *
-   * @param MAP
-   *
-   */
-  public initInfoPanel(map): void {
-    const info = L.control();
-    info.onAdd = () => this._div;
-    info.addTo(map);
   }
 
   /**
@@ -100,7 +84,6 @@ export class ShapesService {
           mouseover: (e) => {
             // @ts-ignore
             this.styleForAZRF(feature, constituentEntities) ? this.highlight.setFeature(e) : '';
-            this._div.innerHTML = `<h4>${ feature.properties.NAME || feature.properties.name }</h4>`;
           },
           mouseout: (e) => {
             this.styleForAZRF(feature, constituentEntities, e);
@@ -111,7 +94,7 @@ export class ShapesService {
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.storage.saveToStorage('shape',{ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
+              this.storage.saveToStorage('shape', { isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
 
               /**
                * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты
