@@ -11,7 +11,7 @@ export class StorageService {
    * @param params - объект с данными для сохранения
    *
    */
-  public saveToStorage(keyName: string, params: Object): void {
+  public saveToStorage(keyName: string, params: object): void {
     window.sessionStorage.setItem(keyName, JSON.stringify(params));
   }
 

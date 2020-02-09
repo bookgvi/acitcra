@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import { Control } from 'leaflet';
 
 @Injectable()
 export class InfoPanelService {
@@ -17,7 +18,8 @@ export class InfoPanelService {
    *
    */
   public initInfoPanel(_div): object {
-    const info = L.control();
+    // @ts-ignore
+    const info: Control = L.control();
     info.onAdd = () => _div;
     return info;
   }

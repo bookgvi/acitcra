@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import { LatLngExpression, LeafletMouseEvent, Marker } from 'leaflet';
 
 @Injectable()
 export class MarkersService {
@@ -19,9 +20,11 @@ export class MarkersService {
    * @param coords - массив с координатами [longitude, latitude]
    * @isDraggable - true/false - задание возможности перемещать маркер по карте
    *
+   * @return marker
+   *
    */
-  initMarker(coords: number[], isDraggable: boolean): object {
-    const marker = new L.Marker(coords, {
+  initMarker(coords: LatLngExpression, isDraggable: boolean): object {
+    const marker: Marker<any> = new L.Marker(coords, {
       draggable: isDraggable
     });
     return marker;
@@ -36,7 +39,7 @@ export class MarkersService {
    * @param map
    *
    */
-  setStartingMarker(marker, map): void {
+  setStartingMarker(marker: Marker<any>, map): void {
     marker.bindPopup('Moscow').openPopup();
     marker.addTo(map);
     marker.on('contextmenu', e => {
@@ -52,7 +55,7 @@ export class MarkersService {
    * @param map
    */
   setMarkerOnClick(map) {
-    map.on('click', (e) => {
+    map.on('click', (e: LeafletMouseEvent) => {
       console.log([e.latlng.lat, e.latlng.lng]);
       const marker = new L.Marker([e.latlng.lat, e.latlng.lng]).addTo(map);
       marker.on('contextmenu', () => {

@@ -1,11 +1,21 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
+import {
+  GeoJSON,
+  LatLngBoundsLiteral,
+  LatLngExpression,
+  LatLngTuple,
+  Layer,
+  LeafletMouseEvent,
+  Map,
+  Marker
+} from 'leaflet';
 
-import { MarkersService } from '../../../services/markers/markers.service';
-import { MapService } from '../../../services/map/map.service';
-import { ShapesService } from '../../../services/subjectsShapes/shapes.service';
-import { DataSourceService } from '../../../models/dataSource/data-source.service';
-import { InfoPanelService } from '../../../services/infoPanel/info-panel.service';
+import { MarkersService } from '../../services/markers/markers.service';
+import { MapService } from '../../services/map/map.service';
+import { ShapesService } from '../../services/subjectsShapes/shapes.service';
+import { DataSourceService } from '../../models/dataSource/data-source.service';
+import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
 
 @Component({
   selector: 'app-map-base',
@@ -13,15 +23,15 @@ import { InfoPanelService } from '../../../services/infoPanel/info-panel.service
   styleUrls: ['./map-base.component.css']
 })
 export class MapBaseComponent implements OnInit, AfterViewInit {
-  private map;
+  private map: Map;
   private clickZoom: number;
   private readonly baseZoom: number;
   private readonly maxZoom: number;
-  private readonly moscowCoords: number[];
-  private readonly centerOfRussia: number[];
-  private readonly RussiaBoundLeftTop: number[];
-  private readonly RussiaBoundRightBottom: number[];
-  private readonly _div: HTMLDivElement;
+  private readonly moscowCoords: LatLngExpression;
+  private readonly centerOfRussia: LatLngExpression;
+  private readonly RussiaBoundLeftTop: LatLngTuple;
+  private readonly RussiaBoundRightBottom: LatLngTuple;
+  private readonly _div: HTMLElement;
   private subjectsOfRussiaShapes: string;
   private subjectsOfRussiaList: string;
 
@@ -45,7 +55,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this._div.innerHTML = `<h4>Россия</h4>`;
   }
 
-  private initMap(): void {
+  private initMap(): Map {
     return L.map('map', {
       center: this.centerOfRussia,
       zoom: this.baseZoom
@@ -60,26 +70,6 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     tiles.addTo(this.map);
   }
 
-  /**
-   *
-   * Стилизация слоя, который содержит субъект РФ, входящие в состав АЗРФ
-   *
-   * @param feature - Блок feature из geoJSON, содержащий кроме всего прочего название слоя
-   * @param constituentEntities - Массив с названиями субъектов РФ
-   * @param e - Событие (mouseover, mouseout etc...); необязательный параметр
-   *
-   * @return - возвращает true, если название слоя в features содержится в массиве constituentEntities
-   *
-   */
-  private styleForAZRF(feature, constituentEntities: string[], e?): boolean {
-    if (constituentEntities.indexOf(feature?.properties?.NAME) !== -1) {
-      // @ts-ignore
-      e ? this.azrfStyle.setFeature(e) : '';
-      return true;
-    }
-    return false;
-  }
-
   ngOnInit() {
   }
 
@@ -87,8 +77,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.map = this.initMap();
     this.map.fitBounds([this.RussiaBoundLeftTop, this.RussiaBoundRightBottom]);
     // this.addTiles();
-    const mosCenterMarker = this.marker.initMarker(this.moscowCoords, false);
-    this.marker.setStartingMarker(mosCenterMarker, this.map);
+    const mosCenterMarker: object = this.marker.initMarker(this.moscowCoords, false);
+    this.marker.setStartingMarker(mosCenterMarker as Marker, this.map);
 
 
     /**
@@ -106,17 +96,16 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
       // Добавляем инфо панель на карту
       //
-    const info = this.infoPanel.initInfoPanel(this._div);
+    const info: object = this.infoPanel.initInfoPanel(this._div);
     // @ts-ignore
     info.addTo(this.map);
 
     // Рисуем субъекты РФ
     this.ds.getData(this.subjectsOfRussiaList).subscribe((subjectsOfRussia: string[]) => {
-      this.ds.getData(this.subjectsOfRussiaShapes).subscribe((shape: object) => {
-        const shapeLayer = this.shapesService.initClickableShapes(shape, this.map, subjectsOfRussia);
-        // @ts-ignore
-        shapeLayer.on('mouseover', (e: Event): void => {
-          // @ts-ignore
+      this.ds.getData(this.subjectsOfRussiaShapes).subscribe((shape: GeoJSON) => {
+        const shapeLayer: Layer = this.shapesService.initClickableShapes(shape, this.map, subjectsOfRussia);
+
+        shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
           this._div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
         })
         this.map.addLayer(shapeLayer);
