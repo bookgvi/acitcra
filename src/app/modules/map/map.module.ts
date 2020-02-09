@@ -6,6 +6,7 @@ import { MapService } from '../../services/map/map.service';
 import { ShapesService } from '../../services/subjectsShapes/shapes.service';
 import { DataSourceService } from '../../models/dataSource/data-source.service';
 import { StorageService } from '../../models/storage/storage.service';
+import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
 
 import { MapBaseComponent } from '../../components/map/map-base/map-base.component';
 
@@ -18,7 +19,8 @@ import { MapBaseComponent } from '../../components/map/map-base/map-base.compone
     MapService,
     ShapesService,
     DataSourceService,
-    StorageService
+    StorageService,
+    InfoPanelService
   ],
   imports: [
     HttpClientModule
