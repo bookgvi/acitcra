@@ -2,44 +2,32 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
+import {
+  Layer,
+  LeafletMouseEvent
+} from 'leaflet';
+
+import { IStyle } from '../../models/shapesStyle/style.interface';
 
 import { BaseFeatures } from '../../models/shapesStyle/baseStyle/base-features';
 import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-features';
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
-import { DataSourceService } from '../../models/dataSource/data-source.service';
+
+import { StorageService } from '../../models/storage/storage.service';
 
 @Injectable()
 export class ShapesService {
-  private baseStyle: object;
-  private highlight: object;
-  private azrfStyle: object;
-  private readonly _div: HTMLDivElement;
-  private constituentEntities: string[];
-  private clickedLayer: object;
+  private baseStyle: BaseFeatures;
+  private highlight: BaseFeatures;
+  private azrfStyle: BaseFeatures;
+  private clickedLayer: Layer;
 
   constructor(
-    private ds: DataSourceService
+    private storage: StorageService
   ) {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
-    this._div = L.DomUtil.create('div', 'info');
-    this._div.textContent = 'Россия';
-
-  }
-
-  /**
-   *
-   * Создание панели с информацией о названии региона, по наведению мыши. Расположен в правом верхнем углу карты
-   *
-   * @param MAP
-   * @param constituentEntities - массив с названиями субъектов РФ
-   *
-   */
-  public initInfoPanel(map): void {
-    const info = L.control();
-    info.onAdd = () => this._div;
-    info.addTo(map);
   }
 
   /**
@@ -48,33 +36,26 @@ export class ShapesService {
    *
    * @param feature - Блок feature из geoJSON, содержащий кроме всего прочего название слоя
    * @param constituentEntities - Массив с названиями субъектов РФ
-   * @param e - Событие (mouseover, mouseout etc...); необязательный параметр
    *
    * @return - возвращает true, если название слоя в features содержится в массиве constituentEntities
    *
    */
-  private styleForAZRF(feature, constituentEntities: string[], e?): boolean {
-    if (constituentEntities.indexOf(feature.properties.NAME) !== -1) {
-      // @ts-ignore
-      e ? this.azrfStyle.setFeature(e) : '';
-      return true;
-    }
-    return false;
+  private styleForAZRF(feature: { properties: { NAME: string; }; }, constituentEntities: string[]): boolean {
+    return constituentEntities.indexOf(feature?.properties?.NAME) !== -1 ? true : false
   }
 
   /**
    *
    * Метод для инициализации данных из geoJSON без обработки событий
    *
-   * @param shap -  - данные в формате geoJSON
+   * @param shape - данные в формате geoJSON
    *
    * @return - стилизованый слой, готовый для добавления на карту
    *
    */
   public initShapes(shape): object {
     return L.geoJSON(shape, {
-      // @ts-ignore
-      style: feature => this.baseStyle.style
+      style: () => this.baseStyle.style
     });
   }
 
@@ -84,46 +65,42 @@ export class ShapesService {
    *
    * @param shape - данные в формате geoJSON
    * @param map - карта, куда нужно добавить слой
+   * @param constituentEntities - массив с субъектами РФ для стилизации
    *
    * @return - стилизованый слой, с обработкой событий, готовый для добавления на карту
    *
    */
-  public initClickableShapes(shape, map, constituentEntities): object {
+  public initClickableShapes(shape, map, constituentEntities: string[]): Layer {
     return L.geoJSON(shape, {
-      style: feature => {
-        // @ts-ignore
+      style: (feature: any): IStyle => {
         return this.styleForAZRF(feature, constituentEntities) ? this.azrfStyle.style : this.baseStyle.style;
       },
       /**
        * Методы обработки событий мыши
        */
-      onEachFeature: (feature, layer) => (
+      onEachFeature: (feature: any, layer: Layer) => (
         layer.on({
-          mouseover: (e) => {
-            // @ts-ignore
+          mouseover: (e: LeafletMouseEvent): void => {
             this.styleForAZRF(feature, constituentEntities) ? this.highlight.setFeature(e) : '';
-            this._div.innerHTML = `<h4>${ feature.properties.NAME || feature.properties.name }</h4>`;
           },
-          mouseout: (e) => {
-            this.styleForAZRF(feature, constituentEntities, e);
+          mouseout: (e: LeafletMouseEvent): void => {
+            this.styleForAZRF(feature, constituentEntities) ? this.azrfStyle.setFeature(e) : '';
+            ;
           },
-          click: (e) => {
+          click: (e: LeafletMouseEvent): void => {
             if (this.styleForAZRF(feature, constituentEntities)) {
               map.fitBounds(e.target.getBounds()); // Отображаем регион с макс зумом
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.ds.saveShapeToSS({ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
+              this.storage.saveToStorage('shape', { isClicked: true, subject: feature }) // Сохраняем на всяк случай в сторадж
 
               /**
-               * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты
-               * Последовательность вызова методов ВАЖНА
+               * Перед удалением устанавливаем основной стиль для АЗРФ, сохраняем этот элемент(layer) и удаляем его
                */
-              // @ts-ignore
-              this.highlight.setFeature(e);
-              this.styleForAZRF(feature, constituentEntities, e);
-              this.clickedLayer = layer;
-              layer.remove();
+              // this.azrfStyle.setFeature(e);
+              // this.clickedLayer = layer;
+              // layer.remove();
             }
           }
         })

@@ -7,7 +7,6 @@ export class DataSourceService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = '../assets/data/admin_level_2.geojson';
   }
 
   /**
@@ -21,27 +20,5 @@ export class DataSourceService {
    */
   public getData(url: string): Observable<any> {
     return this.http.get(url);
-  }
-
-  /**
-   *
-   * Сохранение информации в sessionStorage
-   *
-   * @param params - объект с данными для сохранения
-   *
-   */
-  public saveShapeToSS(params: Object): void {
-    window.sessionStorage.setItem('checkedShape', JSON.stringify(params));
-  }
-
-  /**
-   *
-   * Метод возвращающий данные, сохраненные в sessionStorage
-   *
-   * @return - объект с данными
-   *
-   */
-  public getShapeFromSS(): object {
-    return JSON.parse(window.sessionStorage.getItem('checkedShape'));
   }
 }
