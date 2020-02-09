@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { LatLngExpression, LeafletMouseEvent } from 'leaflet';
 
 @Injectable()
 export class MapService {
-  private coordsOfClick: number[];
+  private coordsOfClick: LatLngExpression;
 
   constructor() {
   }
@@ -15,8 +16,8 @@ export class MapService {
    * @param zoom
    *
   */
-  public centerMapOnClick(map, zoom): void {
-    map.on('click', e => {
+  public centerMapOnClick(map, zoom: number): void {
+    map.on('click', (e: LeafletMouseEvent) => {
       this.coordsOfClick = [e.latlng.lat, e.latlng.lng];
       map.setView(this.coordsOfClick, zoom);
     });
