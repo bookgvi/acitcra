@@ -98,9 +98,9 @@ export class ShapesService {
               /**
                * Перед удалением устанавливаем основной стиль для АЗРФ, сохраняем этот элемент(layer) и удаляем его
                */
-              this.azrfStyle.setFeature(e);
-              this.clickedLayer = layer;
-              layer.remove();
+              // this.azrfStyle.setFeature(e);
+              // this.clickedLayer = layer;
+              // layer.remove();
             }
           }
         })
