@@ -82,7 +82,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
 
     /**
-     * Вспомогательные методы, периодически используются
+     * Вспомогательные методы, могут быть использованы впоследствии
      *
      */
       // this.marker.setMarkerOnClick(this.map);
@@ -108,6 +108,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
         shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
           this._div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
         })
+
         this.map.addLayer(shapeLayer);
       });
     });

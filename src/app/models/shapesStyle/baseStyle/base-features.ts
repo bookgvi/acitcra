@@ -1,8 +1,13 @@
 import { IStyle } from '../style.interface';
 import { LeafletMouseEvent } from 'leaflet';
 
-export class BaseFeatures {
+export class BaseFeatures implements IStyle {
   public style: IStyle;
+  weight: number;
+  opacity: number;
+  color: string;
+  fillOpacity: number;
+  fillColor: string;
 
   constructor() {
     this.style = {
@@ -13,7 +18,8 @@ export class BaseFeatures {
       fillColor: '#7BC9E9'
     };
   }
-  public setFeature(e: LeafletMouseEvent)  {
+
+  public setFeature(e: LeafletMouseEvent): void {
     const layer = e.target;
     layer.setStyle(this.style);
   }
