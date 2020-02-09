@@ -7,7 +7,7 @@ import { BaseFeatures } from '../../models/shapesStyle/baseStyle/base-features';
 import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-features';
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
 
-import { DataSourceService } from '../../models/dataSource/data-source.service';
+import { StorageService } from '../../models/storage/storage.service';
 
 @Injectable()
 export class ShapesService {
@@ -18,7 +18,7 @@ export class ShapesService {
   private clickedLayer: object;
 
   constructor(
-    private ds: DataSourceService
+    private storage: StorageService
   ) {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
@@ -111,7 +111,7 @@ export class ShapesService {
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.ds.saveToStorage('shape',{ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
+              this.storage.saveToStorage('shape',{ isClicked: true, subject: feature }) // Сохраняем на всяк случай в сессион сторадж
 
               /**
                * Определяем стиль, сохраняем регион с нужным стилем и удаляем его с карты

@@ -15,13 +15,13 @@ import { retry } from 'rxjs/operators';
 })
 export class MapBaseComponent implements OnInit, AfterViewInit {
   private map;
-  private moscowCoords: number[];
-  private centerOfRussia: number[];
-  private baseZoom: number;
-  private maxZoom: number;
   private clickZoom: number;
-  private RussiaBoundLeftTop: number[];
-  private RussiaBoundRightBottom: number[];
+  private readonly baseZoom: number;
+  private readonly maxZoom: number;
+  private readonly moscowCoords: number[];
+  private readonly centerOfRussia: number[];
+  private readonly RussiaBoundLeftTop: number[];
+  private readonly RussiaBoundRightBottom: number[];
   private subjectsOfRussiaShapes: string;
   private subjectsOfRussiaList: string;
 
