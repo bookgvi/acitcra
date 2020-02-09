@@ -14,6 +14,7 @@ import { HighlightFeatures } from '../../models/shapesStyle/highlight/highlight-
 import { AzrfStyle } from '../../models/shapesStyle/azrfStyle/azrf-style';
 
 import { StorageService } from '../../models/storage/storage.service';
+import { IsElemInArrayService } from '../utils/isElemInArray/is-elem-in-array.service';
 
 @Injectable()
 export class ShapesService {
@@ -23,25 +24,12 @@ export class ShapesService {
   private clickedLayer: Layer;
 
   constructor(
-    private storage: StorageService
+    private storage: StorageService,
+    private isElemInArray: IsElemInArrayService
   ) {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
-  }
-
-  /**
-   *
-   * Стилизация слоя, который содержит субъект РФ, входящие в состав АЗРФ
-   *
-   * @param feature - Блок feature из geoJSON, содержащий кроме всего прочего название слоя
-   * @param constituentEntities - Массив с названиями субъектов РФ
-   *
-   * @return - возвращает true, если название слоя в features содержится в массиве constituentEntities
-   *
-   */
-  private styleForAZRF(feature: { properties: { NAME: string; }; }, constituentEntities: string[]): boolean {
-    return constituentEntities.indexOf(feature?.properties?.NAME) !== -1 ? true : false
   }
 
   /**
@@ -53,9 +41,11 @@ export class ShapesService {
    * @return - стилизованый слой, готовый для добавления на карту
    *
    */
-  public initShapes(shape): object {
+  public initShapes(shape): Layer {
     return L.geoJSON(shape, {
-      style: () => this.baseStyle.style
+      style: (feature: any): IStyle => {
+        return this.azrfStyle.style
+      }
     });
   }
 
@@ -73,23 +63,24 @@ export class ShapesService {
   public initClickableShapes(shape, map, constituentEntities: string[]): Layer {
     return L.geoJSON(shape, {
       style: (feature: any): IStyle => {
-        return this.styleForAZRF(feature, constituentEntities) ? this.azrfStyle.style : this.baseStyle.style;
+        return this.isElemInArray.check(feature?.properties?.NAME, constituentEntities) ? this.azrfStyle.style : this.baseStyle.style;
       },
       /**
        * Методы обработки событий мыши
        */
-      onEachFeature: (feature: any, layer: Layer) => (
+      onEachFeature: (feature: any, layer: Layer) => {
+        const isPresent: boolean = this.isElemInArray.check(feature?.properties?.NAME, constituentEntities)
         layer.on({
           mouseover: (e: LeafletMouseEvent): void => {
-            this.styleForAZRF(feature, constituentEntities) ? this.highlight.setFeature(e) : '';
+            isPresent ? this.highlight.setFeature(e) : ''; // подсвечиваем элемент под курсором
           },
           mouseout: (e: LeafletMouseEvent): void => {
-            this.styleForAZRF(feature, constituentEntities) ? this.azrfStyle.setFeature(e) : '';
+            isPresent ? this.azrfStyle.setFeature(e) : ''; // возвращаем начальный стиль
             ;
           },
           click: (e: LeafletMouseEvent): void => {
-            if (this.styleForAZRF(feature, constituentEntities)) {
-              map.fitBounds(e.target.getBounds()); // Отображаем регион с макс зумом
+            if (isPresent) {
+              map.fitBounds(e.target.getBounds()); // Отображаем элемент с макс зумом
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
@@ -104,7 +95,7 @@ export class ShapesService {
             }
           }
         })
-      )
+      }
     });
   }
 }
