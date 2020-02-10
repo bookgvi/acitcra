@@ -1,12 +1,13 @@
 import { BaseFeatures } from '../baseStyle/base-features';
+import { IStyle } from '../style.interface';
 
 export class HighlightFeatures extends BaseFeatures {
-  public style: object;
+  public style: IStyle;
 
   constructor() {
     super();
     this.style = {
-      weight: 10,
+      weight: 5,
       opacity: 1.0,
       color: '#DFA612',
       fillOpacity: 1.0,
