@@ -31,7 +31,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private readonly centerOfRussia: LatLngExpression;
   private readonly RussiaBoundLeftTop: LatLngTuple;
   private readonly RussiaBoundRightBottom: LatLngTuple;
-  private readonly _div: HTMLElement;
+  private readonly div: HTMLElement;
   private subjectsOfRussiaShapes: string;
   private subjectsOfRussiaList: string;
 
@@ -51,8 +51,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.subjectsOfRussiaList = '../../assets/constituentEntities/subjectsOfRussia.json';
     this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];
     this.RussiaBoundRightBottom = [39.095962936305476, 187.73437500000003];
-    this._div = L.DomUtil.create('div', 'info');
-    this._div.innerHTML = `<h4>Россия</h4>`;
+    this.div = L.DomUtil.create('div', 'info');
+    this.div.innerHTML = `<h4>Россия</h4>`;
   }
 
   private initMap(): Map {
@@ -96,7 +96,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
       // Добавляем инфо панель на карту
       //
-    const info: object = this.infoPanel.initInfoPanel(this._div);
+    const info: object = this.infoPanel.initInfoPanel(this.div);
     // @ts-ignore
     info.addTo(this.map);
 
@@ -106,7 +106,8 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
         const shapeLayer: Layer = this.shapesService.initClickableShapes(shape, this.map, subjectsOfRussia);
 
         shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
-          this._div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
+          // @ts-ignore
+          this.div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
         })
 
         this.map.addLayer(shapeLayer);

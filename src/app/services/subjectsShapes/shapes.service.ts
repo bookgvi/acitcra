@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
-import {
-  Layer,
-  LeafletMouseEvent
-} from 'leaflet';
+import { Layer, LeafletMouseEvent } from 'leaflet';
 
 import { IStyle } from '../../models/shapesStyle/style.interface';
 
@@ -44,7 +39,7 @@ export class ShapesService {
   public initShapes(shape): Layer {
     return L.geoJSON(shape, {
       style: (feature: any): IStyle => {
-        return this.azrfStyle.style
+        return this.azrfStyle.style;
       }
     });
   }
@@ -69,7 +64,7 @@ export class ShapesService {
        * Методы обработки событий мыши
        */
       onEachFeature: (feature: any, layer: Layer) => {
-        const isPresent: boolean = this.isElemInArray.check(feature?.properties?.NAME, constituentEntities)
+        const isPresent: boolean = this.isElemInArray.check(feature?.properties?.NAME, constituentEntities);
         layer.on({
           mouseover: (e: LeafletMouseEvent): void => {
             isPresent ? this.highlight.setFeature(e) : ''; // подсвечиваем элемент под курсором
@@ -84,7 +79,7 @@ export class ShapesService {
 
               // @ts-ignore
               this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
-              this.storage.saveToStorage('shape', { isClicked: true, subject: feature }) // Сохраняем на всяк случай в сторадж
+              this.storage.saveToStorage('shape', { isClicked: true, subject: feature }); // Сохраняем на всяк случай в сторадж
 
               /**
                * Перед удалением устанавливаем основной стиль для АЗРФ, сохраняем этот элемент(layer) и удаляем его
@@ -94,7 +89,7 @@ export class ShapesService {
               // layer.remove();
             }
           }
-        })
+        });
       }
     });
   }

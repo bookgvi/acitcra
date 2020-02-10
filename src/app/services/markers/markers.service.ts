@@ -35,8 +35,8 @@ export class MarkersService {
    * Установка маркера в центре Москвы (по нажатию подсказка "Москва")
    * Клик правой кнопкой мыши - маркер удаляется с карты
    *
-   * @param marker
-   * @param map
+   * @param marker - маркер на карте
+   * @param map - карта
    *
    */
   setStartingMarker(marker: Marker<any>, map): void {
@@ -52,7 +52,7 @@ export class MarkersService {
    * Установка маркера на карте и вывод в консоль координат при нажатии левой кнопкой мыши
    * Удаление маркера с карты по нажатию на нем правой кнопкой мыши
    *
-   * @param map
+   * @param map - карта
    */
   setMarkerOnClick(map) {
     map.on('click', (e: LeafletMouseEvent) => {

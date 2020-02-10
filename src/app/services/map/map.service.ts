@@ -12,10 +12,10 @@ export class MapService {
    *
    * Центрирование карты по клику (неиспользуется)
    *
-   * @param map
-   * @param zoom
+   * @param map - карта
+   * @param zoom - масштаб(зум)
    *
-  */
+   */
   public centerMapOnClick(map, zoom: number): void {
     map.on('click', (e: LeafletMouseEvent) => {
       this.coordsOfClick = [e.latlng.lat, e.latlng.lng];
