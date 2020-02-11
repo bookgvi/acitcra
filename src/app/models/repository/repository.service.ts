@@ -22,6 +22,7 @@ export class RepositoryService {
           console.warn('...Error catcher: ', err.statusText);
           return of([]);
         }
-      ));
+      )
+    );
   }
 }
