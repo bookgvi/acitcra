@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
-import { LatLngExpression, LeafletMouseEvent, Marker } from 'leaflet';
+import { LatLngExpression, LeafletMouseEvent, Marker, Map } from 'leaflet';
 
 @Injectable()
 export class MarkersService {
@@ -18,7 +18,7 @@ export class MarkersService {
    * Инициализация маркера
    *
    * @param coords - массив с координатами [longitude, latitude]
-   * @isDraggable - true/false - задание возможности перемещать маркер по карте
+   * @param isDraggable - true/false - задание возможности перемещать маркер по карте
    *
    * @return marker
    *
@@ -35,11 +35,11 @@ export class MarkersService {
    * Установка маркера в центре Москвы (по нажатию подсказка "Москва")
    * Клик правой кнопкой мыши - маркер удаляется с карты
    *
-   * @param marker
-   * @param map
+   * @param marker - маркер на карте
+   * @param map - карта
    *
    */
-  setStartingMarker(marker: Marker<any>, map): void {
+  setStartingMarker(marker: Marker<any>, map: Map): void {
     marker.bindPopup('Moscow').openPopup();
     marker.addTo(map);
     marker.on('contextmenu', e => {
@@ -52,9 +52,9 @@ export class MarkersService {
    * Установка маркера на карте и вывод в консоль координат при нажатии левой кнопкой мыши
    * Удаление маркера с карты по нажатию на нем правой кнопкой мыши
    *
-   * @param map
+   * @param map - карта
    */
-  setMarkerOnClick(map) {
+  setMarkerOnClick(map): void {
     map.on('click', (e: LeafletMouseEvent) => {
       console.log([e.latlng.lat, e.latlng.lng]);
       const marker = new L.Marker([e.latlng.lat, e.latlng.lng]).addTo(map);

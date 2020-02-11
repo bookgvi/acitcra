@@ -1,4 +1,4 @@
-import { IStyle } from '../style.interface';
+import { IStyle } from '../../interfaces/style.interface';
 import { LeafletMouseEvent } from 'leaflet';
 
 export class BaseFeatures implements IStyle {
