@@ -44,6 +44,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.maxZoom = 19;
     this.clickZoom = 11;
     this.subjectsOfRussiaShapes = '../../assets/geoData/Regions.geojson';
+    // this.subjectsOfRussiaShapes = '../../assets/geoData/admin_level_6.geojson';
     this.subjectsOfRussiaList = '../../assets/constituentEntities/subjectsOfRussia.json';
     this.subjectsOfRussiaListResult = [];
     this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];

@@ -32,7 +32,7 @@ export class ShapesService {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
-    this.singleRegionShape = '../../assets/geoData/pevek.geojson';
+    this.singleRegionShape = '../../assets/geoData/regions/chao.geojson';
   }
 
   /**
@@ -55,6 +55,10 @@ export class ShapesService {
             this.infoPanel.changeSubTitle(subject, `
             ${ feature.name }
             `);
+            this.highlight.setFeature(e);
+          },
+          mouseout: (e: LeafletMouseEvent): void => {
+            this.azrfStyle.setFeature(e);
           }
         });
       }
@@ -92,8 +96,11 @@ export class ShapesService {
             isPresent ? this.azrfStyle.setFeature(e) : ''; // возвращаем начальный стиль
           },
           click: (e: LeafletMouseEvent): void => {
-            // console.log(JSON.stringify(feature));
-            if (isPresent) {
+            console.log(JSON.stringify(feature));
+            /**
+             * TODO: вернуть правильную проверку!!!
+             */
+            if (isPresent || !isPresent) {
               map.fitBounds(e.target.getBounds()); // Отображаем элемент с макс зумом
 
               /**
