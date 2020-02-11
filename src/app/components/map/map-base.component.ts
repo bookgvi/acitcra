@@ -1,21 +1,14 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
-import {
-  GeoJSON,
-  LatLngBoundsLiteral,
-  LatLngExpression,
-  LatLngTuple,
-  Layer,
-  LeafletMouseEvent,
-  Map,
-  Marker
-} from 'leaflet';
+import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker } from 'leaflet';
 
 import { MarkersService } from '../../services/markers/markers.service';
 import { MapService } from '../../services/map/map.service';
 import { ShapesService } from '../../services/subjectsShapes/shapes.service';
 import { DataSourceService } from '../../models/dataSource/data-source.service';
 import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
+import { concat, of } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 
 @Component({
   selector: 'app-map-base',
@@ -31,9 +24,10 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private readonly centerOfRussia: LatLngExpression;
   private readonly RussiaBoundLeftTop: LatLngTuple;
   private readonly RussiaBoundRightBottom: LatLngTuple;
+  private readonly subjectsOfRussiaShapes: string;
   private readonly div: HTMLElement;
-  private subjectsOfRussiaShapes: string;
   private subjectsOfRussiaList: string;
+  private subjectsOfRussiaListResult: string[];
 
   constructor(
     private marker: MarkersService,
@@ -47,8 +41,9 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.baseZoom = 4;
     this.maxZoom = 19;
     this.clickZoom = 11;
-    this.subjectsOfRussiaShapes = '../../assets/geoData/Regions.geojson';
-    this.subjectsOfRussiaList = '../../assets/constituentEntities/subjectsOfRussia.json';
+    this.subjectsOfRussiaShapes = '../../assets/geoData/Regions.geojson1';
+    this.subjectsOfRussiaList = '../../assets/constituentEntities/subjectsOfRussia.json1';
+    this.subjectsOfRussiaListResult = [];
     this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];
     this.RussiaBoundRightBottom = [39.095962936305476, 187.73437500000003];
     this.div = L.DomUtil.create('div', 'info');
@@ -101,17 +96,40 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     info.addTo(this.map);
 
     // Рисуем субъекты РФ
-    this.ds.getData(this.subjectsOfRussiaList).subscribe((subjectsOfRussia: string[]) => {
-      this.ds.getData(this.subjectsOfRussiaShapes).subscribe((shape: GeoJSON) => {
-        const shapeLayer: Layer = this.shapesService.initClickableShapes(shape, this.map, subjectsOfRussia);
-
-        shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
-          // @ts-ignore
-          this.div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
+    const result = concat(
+      this.ds.getData(this.subjectsOfRussiaList).pipe(
+        retry(3),
+        catchError(err => {
+            console.warn('...Error catcher: ', err.statusText);
+            return of([]);
+          }
+        )),
+      this.ds.getData(this.subjectsOfRussiaShapes).pipe(
+        retry(5),
+        catchError(err => {
+          this.div.innerHTML = `<h2>Ошибка отрисовки карты</h2>`;
+          console.warn('...Map error catcher: ', err.statusText);
+          return of([]);
         })
+      )
+    );
+    result.subscribe({
+      next: value => {
+        if (Array.isArray(value)) {
+          this.subjectsOfRussiaListResult = value;
+        } else {
+          const shapeLayer: Layer = this.shapesService.initClickableShapes(value, this.map, this.subjectsOfRussiaListResult);
 
-        this.map.addLayer(shapeLayer);
-      });
+          shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
+            // @ts-ignore
+            this.div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
+          });
+
+          this.map.addLayer(shapeLayer);
+        }
+      },
+      error: err => {},
+      complete: () => console.log('...and it is done!')
     });
   }
 }
