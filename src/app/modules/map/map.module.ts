@@ -10,6 +10,7 @@ import { DataSourceService } from '../../models/dataSource/data-source.service';
 import { StorageService } from '../../services/storage/storage.service';
 import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
 import { IsElemInArrayService } from '../../services/utils/isElemInArray/is-elem-in-array.service';
+import { RepositoryService } from '../../models/repository/repository.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { IsElemInArrayService } from '../../services/utils/isElemInArray/is-elem
     DataSourceService,
     StorageService,
     InfoPanelService,
-    IsElemInArrayService
+    IsElemInArrayService,
+    RepositoryService
   ],
   imports: [
     HttpClientModule

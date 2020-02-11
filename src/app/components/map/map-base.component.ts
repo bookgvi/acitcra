@@ -3,14 +3,14 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker } from 'leaflet';
 
-import { concat, of } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { concat, Observable } from 'rxjs';
 
 import { MarkersService } from '../../services/markers/markers.service';
 import { MapService } from '../../services/map/map.service';
 import { ShapesService } from '../../services/shapes/shapes.service';
 import { DataSourceService } from '../../models/dataSource/data-source.service';
 import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
+import { RepositoryService } from '../../models/repository/repository.service';
 
 @Component({
   selector: 'app-map-base',
@@ -27,8 +27,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
   private readonly RussiaBoundLeftTop: LatLngTuple;
   private readonly RussiaBoundRightBottom: LatLngTuple;
   private readonly subjectsOfRussiaShapes: string;
-  private readonly div: HTMLElement;
-  private subjectsOfRussiaList: string;
+  private readonly subjectsOfRussiaList: string;
   private subjectsOfRussiaListResult: string[];
 
   constructor(
@@ -36,6 +35,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     private mapService: MapService,
     private shapesService: ShapesService,
     private ds: DataSourceService,
+    private repo: RepositoryService,
     private infoPanel: InfoPanelService
   ) {
     this.moscowCoords = [55.751244, 37.618423];
@@ -48,11 +48,10 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
     this.subjectsOfRussiaListResult = [];
     this.RussiaBoundLeftTop = [82.04574006217713, 17.402343750000004];
     this.RussiaBoundRightBottom = [39.095962936305476, 187.73437500000003];
-    this.div = L.DomUtil.create('div', 'info');
-    this.div.innerHTML = `<h4>Россия</h4>`;
   }
 
   ngOnInit() {
+    this.infoPanel.changeTitle(`<h4>Россия</h4>`);
   }
 
   ngAfterViewInit(): void {
@@ -90,29 +89,16 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
 
 
       // Добавляем инфо панель на карту
-    const info: object = this.infoPanel.initInfoPanel(this.div);
+    const info: object = this.infoPanel.initInfoPanel();
     // @ts-ignore
     info.addTo(this.map);
 
     /**
      * Рисуем субъекты РФ
      */
-    const result = concat(
-      this.ds.getData(this.subjectsOfRussiaList).pipe(
-        retry(3),
-        catchError(err => {
-            console.warn('...Error catcher: ', err.statusText);
-            return of([]);
-          }
-        )),
-      this.ds.getData(this.subjectsOfRussiaShapes).pipe(
-        retry(5),
-        catchError(err => {
-          this.div.innerHTML = `<h2>Ошибка отрисовки карты</h2>`;
-          console.warn('...Map error catcher: ', err.statusText);
-          return of([]);
-        })
-      )
+    const result: Observable<any> = concat(
+      this.repo.getDataResult(this.subjectsOfRussiaList),
+      this.repo.getDataResult(this.subjectsOfRussiaShapes)
     );
     result.subscribe({
       next: value => {
@@ -130,7 +116,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
            */
           shapeLayer.on('mouseover', (e: LeafletMouseEvent): void => {
             // @ts-ignore
-            this.div.innerHTML = `<h4>${ e.layer.feature.properties.NAME }</h4>`;
+            this.infoPanel.changeTitle(`<h4>${ e.layer.feature.properties.NAME || e.layer.feature.properties.name }</h4>`);
           });
 
           // Отображаем слой с шэйпами

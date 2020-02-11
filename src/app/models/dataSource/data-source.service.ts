@@ -17,7 +17,7 @@ export class DataSourceService {
    * @return - Observable
    *
    */
-  public getData(url: string): Observable<any> {
+  public requestData(url: string): Observable<any> {
     return this.http.get(url);
   }
 }
