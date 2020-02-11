@@ -21,7 +21,7 @@ export class ShapesService {
   private azrfStyle: BaseFeatures;
   private clickedLayer: Layer;
   private regions: Layer;
-  private singleRegionShape: string;
+  private regionsGeoJSONList: object[];
 
   constructor(
     private storage: StorageService,
@@ -32,7 +32,9 @@ export class ShapesService {
     this.baseStyle = new BaseFeatures();
     this.highlight = new HighlightFeatures();
     this.azrfStyle = new AzrfStyle();
-    this.singleRegionShape = '../../assets/geoData/regions/chao.geojson';
+    this.regionsGeoJSONList = [
+      { title: 'Чукотский автономный округ', url: '../../assets/geoData/regions/chao.geojson' }
+    ];
   }
 
   /**
@@ -96,7 +98,7 @@ export class ShapesService {
             isPresent ? this.azrfStyle.setFeature(e) : ''; // возвращаем начальный стиль
           },
           click: (e: LeafletMouseEvent): void => {
-            console.log(JSON.stringify(feature));
+            // console.log(JSON.stringify(feature));
             /**
              * TODO: вернуть правильную проверку!!!
              */
@@ -104,24 +106,31 @@ export class ShapesService {
               map.fitBounds(e.target.getBounds()); // Отображаем элемент с макс зумом
 
               /**
-               * TODO: загружать регионы только "кликнутого" субъекта
+               * Проеверяю есть ли url для регионов субъекта по которому кликнули
+               * если нет то return
                */
-              const result: Observable<any> = this.repo.getDataResult(this.singleRegionShape);
+                // @ts-ignore
+              const region: object = this.regionsGeoJSONList.filter(item => item.title === feature.properties.NAME).pop();
+              if (!region) {
+                return
+              }
+              // @ts-ignore
+              const result: Observable<any> = this.repo.getDataResult(region.url);
               result.subscribe({
                 next: value => {
                   // @ts-ignore
                   // tslint:disable-next-line:no-unused-expression
-                  this.regions?.options ? this.regions.remove() : '';
+                  this.regions?.options ? this.regions.remove() : ''; // Удаляем границы регионов показанные ранее (если таковы есть)
                   /**
-                   * TODO: прописать имя субъекта в geoJSON каждого региона!!!
+                   * Если клик по субъекту АЗРФ, то стираем границы субъекта и рисуем регионы внутри него
                    */
-                  if (feature.properties.NAME === 'Чукотский автономный округ') {
+                  if (feature.properties.NAME === value.name) {
                     this.regions = this.initShapes(value, feature.properties.NAME);
                     map.addLayer(this.regions);
                   }
                   // @ts-ignore
                   // tslint:disable-next-line:no-unused-expression
-                  this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион
+                  this.clickedLayer?.feature ? map.addLayer(this.clickedLayer) : ''; // Восстанавливаем удаленный регион (если такой есть)
                   this.storage.saveToStorage('shape', { isClicked: true, subject: feature }); // Сохраняем на всяк случай в сторадж
 
                   /**
