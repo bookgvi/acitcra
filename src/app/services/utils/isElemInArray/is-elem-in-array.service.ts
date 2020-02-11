@@ -15,7 +15,7 @@ export class IsElemInArrayService {
    *
    */
   public check(item: string, list: string[]): boolean {
-    return list.indexOf(item) !== -1 ? true : false;
+    return list.indexOf(item) !== -1;
   }
 
 }
