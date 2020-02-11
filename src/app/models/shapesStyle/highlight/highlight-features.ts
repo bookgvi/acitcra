@@ -1,5 +1,5 @@
 import { BaseFeatures } from '../baseStyle/base-features';
-import { IStyle } from '../style.interface';
+import { IStyle } from '../../interfaces/style.interface';
 
 export class HighlightFeatures extends BaseFeatures {
   public style: IStyle;
