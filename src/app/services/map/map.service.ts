@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LatLngExpression, LeafletMouseEvent } from 'leaflet';
+import * as L from 'leaflet';
+import { LatLngExpression, LeafletMouseEvent, Map, TileLayer } from 'leaflet';
 
 @Injectable()
 export class MapService {
@@ -9,17 +10,30 @@ export class MapService {
   }
 
   /**
-   *
+   * Создание инстанса карты
+   * @param options - опции для создания карты
+   */
+  public initMap(options: object): Map {
+    return L.map('map', options);
+  }
+
+  /**
+   * Инициализация тайлов
+   * @param options - опции для карты
+   */
+  public getTiles(options: object): TileLayer {
+    return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', options);
+  }
+
+  /**
    * Центрирование карты по клику (неиспользуется)
-   *
    * @param map - карта
    * @param zoom - масштаб(зум)
-   *
    */
-  public centerMapOnClick(map, zoom: number): void {
+  public centerMapOnClick(map: Map, zoom: number): void {
     map.on('click', (e: LeafletMouseEvent) => {
-      this.coordsOfClick = [e.latlng.lat, e.latlng.lng];
-      map.setView(this.coordsOfClick, zoom);
+      const coordsOfClick: LatLngExpression = [e.latlng.lat, e.latlng.lng];
+      map.setView(coordsOfClick, zoom);
     });
   }
 }

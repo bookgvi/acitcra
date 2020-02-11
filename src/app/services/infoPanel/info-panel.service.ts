@@ -12,12 +12,12 @@ export class InfoPanelService {
    *
    * Создание панели с информацией о названии региона, по наведению мыши. Расположен в правом верхнем углу карты
    *
-   * @param map - карта
+   * @param div - HTML div
    *
    * @return infoPanel - объект с HTML для вставки в угол карты
    *
    */
-  public initInfoPanel(div): object {
+  public initInfoPanel(div: HTMLElement): object {
     // @ts-ignore
     const info: Control = L.control();
     info.onAdd = () => div;
