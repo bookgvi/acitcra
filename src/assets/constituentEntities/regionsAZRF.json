@@ -1,0 +1,11 @@
+{
+  "regions": [
+    {
+      "title": "Чукотский автономный округ",
+      "url": "../assets/geoData/regions/chao.geojson"
+    },
+    {
+      "title": "Республика Саха (Якутия)"
+    }
+  ]
+}
