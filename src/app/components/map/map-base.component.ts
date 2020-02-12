@@ -1,13 +1,12 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 
-import * as L from 'leaflet';
-import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker } from 'leaflet';
+import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
 
 import { concat, Observable } from 'rxjs';
 
 import { MarkersService } from '../../services/markers/markers.service';
 import { MapService } from '../../services/map/map.service';
-import { ShapesService } from '../../services/shapes/shapes.service';
+import { ShapesService } from '../../services/shapeExtended/shapes.service';
 import { DataSourceService } from '../../models/dataSource/data-source.service';
 import { InfoPanelService } from '../../services/infoPanel/info-panel.service';
 import { RepositoryService } from '../../models/repository/repository.service';
@@ -84,7 +83,7 @@ export class MapBaseComponent implements OnInit, AfterViewInit {
       //
       // Рисуем границу РФ
       // this.ds.getShape().subscribe(shape => {
-      //   const shapeLayer = this.shapes.initShapes(shape);
+      //   const shapeLayer = this.shapeExtended.initShapes(shape);
       //   this.map.addLayer(shapeLayer);
       // });
 

@@ -1,6 +1,6 @@
 // import { TestBed } from '@angular/core/testing';
 //
-// import { ShapesService } from './shapes.service';
+// import { ShapesService } from './shapeExtended.service';
 //
 // describe('ShapesService', () => {
 //   beforeEach(() => TestBed.configureTestingModule({}));
