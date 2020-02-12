@@ -114,7 +114,8 @@ export class ShapesService {
                 map(({ regions }) => regions.filter(item => item.title === feature.properties.NAME)),
                 map(item => {
                   const val: object | undefined = item.pop();
-                  return !val || !val['url'] ? '' : val['url'];
+                  // @ts-ignore
+                  return !val?.url ? '' : val.url;
                 }),
                 exhaustMap(url => {
                   return url.length ? this.repo.getDataResult(url) : of([]);
