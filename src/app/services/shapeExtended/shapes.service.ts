@@ -69,19 +69,34 @@ export class ShapesService extends SimpleShapeService {
                * Получаю данные о регионах "кликнутого" субъекта
                * Если есть url, передаю в запрос на получение geoJSON
                */
-              const result: Observable<any> = this.repo.getDataResult(this.regionsGeoJSONList);
+              const result: Observable<any> = this.repo.getDataResult(this.regionsGeoJSONList, 'РегионыАЗРФ');
               result.pipe(
-                map(({ regions }) => regions.filter(item => item.title === feature.properties.NAME)),
-                map(item => {
-                  const val: object | undefined = item.pop();
-                  // @ts-ignore
-                  return !val?.url ? '' : val.url;
+                map(val => {
+                  /**
+                   * Сохраняем данные локально (в будущем сэкономит трафик и увеличит скорость(не будет сетевых запросов)
+                   */
+                  this.storage.saveToStorage('РегионыАЗРФ', val);
+
+                  return val.regions?.filter(item => item.title === feature.properties.NAME);
                 }),
-                exhaustMap(url => {
-                  return url.length ? this.repo.getDataResult(url) : of([]);
+                map(item => {
+                  const val: object | undefined = item?.pop();
+                  // @ts-ignore
+                  const url: string = !val?.url ? '' : val.url;
+                  // @ts-ignore
+                  const label: string = val?.title;
+                  return { url, label };
+                }),
+                exhaustMap(({ url, label }) => {
+                  return url.length ? this.repo.getDataResult(url, label) : of([]);
                 })
               ).subscribe({
                 next: value => {
+                  /**
+                   * Сохраняем данные локально (в будущем сэкономит трафик и увеличит скорость(не будет сетевых запросов)
+                   */
+                  this.storage.saveToStorage(value.name, value);
+
                   // @ts-ignore
                   // tslint:disable-next-line:no-unused-expression
                   this.regions?.options ? this.regions.remove() : ''; // Удаляем границы регионов показанные ранее (если таковы есть)
