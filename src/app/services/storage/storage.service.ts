@@ -26,7 +26,7 @@ export class StorageService {
 
   /**
    *
-   * Метод возвращающий данные, сохраненные в sessionStorage
+   * Метод возвращающий данные, сохраненные в Storage
    *
    * @return - объект с данными
    *
