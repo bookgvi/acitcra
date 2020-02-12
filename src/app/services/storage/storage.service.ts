@@ -7,7 +7,7 @@ export class StorageService {
 
   /**
    *
-   * Сохранение информации в sessionStorage
+   * Сохранение информации в Storage
    *
    * @param keyName - имя поля в сторадже
    * @param params - объект с данными для сохранения
@@ -17,9 +17,9 @@ export class StorageService {
     // tslint:disable-next-line:no-unused-expression
     if (!this.getFromStorage(keyName)) {
       try {
-        window.sessionStorage.setItem(keyName, JSON.stringify(params));
+        window.localStorage.setItem(keyName, JSON.stringify(params));
       } catch (err) {
-        console.warn('...Catched storage error', err.message);
+        // console.warn('...Catched storage error', err.message);
       }
     }
   }
@@ -32,7 +32,7 @@ export class StorageService {
    *
    */
   public getFromStorage(keyName: string): object {
-    return JSON.parse(window.sessionStorage.getItem(keyName));
+    return JSON.parse(window.localStorage.getItem(keyName));
   }
 
 }
