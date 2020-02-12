@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 
 import * as L from 'leaflet';
-import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker } from 'leaflet';
+import { LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
 
 import { concat, Observable } from 'rxjs';
 

@@ -5,7 +5,36 @@
       "url": "../assets/geoData/regions/chao.geojson"
     },
     {
-      "title": "Республика Саха (Якутия)"
+      "title": "Республика Саха (Якутия)",
+      "url": "../assets/geoData/regions/saha.geojson"
+    },
+    {
+      "title": "Мурманская область",
+      "url": "../assets/geoData/regions/murmanskayaOblast.geojson"
+    },
+    {
+      "title": "Ненецкий автономный округ",
+      "url": "../assets/geoData/regions/nao.geojson"
+    },
+    {
+      "title": "Ямало-Ненецкий автономный округ",
+      "url": "../assets/geoData/regions/yanao.geojson"
+    },
+    {
+      "title": "Республика Карелия",
+      "url": "../assets/geoData/regions/kareliya.geojson"
+    },
+    {
+      "title": "Республика Коми",
+      "url": "../assets/geoData/regions/komi.geojson"
+    },
+    {
+      "title": "Красноярский край",
+      "url": "../assets/geoData/regions/krasnoyarskiyKray.geojson"
+    },
+    {
+      "title": "Архангельская область",
+      "url": "../assets/geoData/regions/archangelskayaOblast.geojson"
     }
   ]
 }

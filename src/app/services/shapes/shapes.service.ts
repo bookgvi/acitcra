@@ -99,11 +99,8 @@ export class ShapesService {
           },
           click: (e: LeafletMouseEvent): void => {
             // console.log(JSON.stringify(feature));
-            /**
-             * TODO: вернуть правильную проверку!!!
-             */
-            if (isPresent || !isPresent) {
-              // mymap.fitBounds(e.target.getBounds()); // Отображаем элемент с макс зумом
+            if (isPresent) {
+              mymap.fitBounds(e.target.getBounds()); // Отображаем элемент с макс зумом
 
               /**
                * Получаю данные о регионах "кликнутого" субъекта
